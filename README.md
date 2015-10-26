@@ -12,4 +12,3 @@ The API is provided through the room manager class.
 The room manager should be initialized and then can be altered by making method calls.
 
 Other objects should not be accessed, and all desirable changes should be changeable using Strings and Ints.
-
