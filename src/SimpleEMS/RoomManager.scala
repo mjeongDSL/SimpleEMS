@@ -15,7 +15,7 @@ class RoomManager {
   }
   
   def getSchedule (roomName: String, day: Int): Schedule = {
-    mRooms[roomName][Int]
+    mRooms.get(roomName)(day)
   }
     
   def getAvailableRooms (hour: Int, endHour: Int, date: String): Seq[Room] = { 
