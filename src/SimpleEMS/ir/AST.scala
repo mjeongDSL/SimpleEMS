@@ -4,6 +4,8 @@ package simpleEMS.ir
  * @author mjeong
  */
 
+import simpleEMS.ir.Room._
+
 sealed abstract class AST
 
 /** Statements **/
@@ -19,12 +21,10 @@ case class AddFilter(left: Stmt, right: Filter) extends Joint
 
 /** Filters **/
 sealed abstract class Filter extends AST
-case class Between(time: Time) extends Filter
-case class After(time: Time) extends Filter
-case class Before(time: Time) extends Filter
-case class In(building: Building) extends Filter
-
-/** Objects? **/
+case class Between(time: Int) extends Filter
+case class After(time: Int) extends Filter
+case class Before(time: Int) extends Filter
+case class In(building: String) extends Filter
 
 
 

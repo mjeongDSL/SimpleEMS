@@ -8,7 +8,7 @@ package simpleEMS.ir
 
 import simpleEMS.ir.Occupant._
 
-object Schedule {
+class Schedule {
   /**
    * The schedule for a day
    */
@@ -29,4 +29,8 @@ object Schedule {
     }
     true
   }
+}
+
+object Schedule {
+  
 }

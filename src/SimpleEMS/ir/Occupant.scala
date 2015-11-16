@@ -4,7 +4,7 @@ package simpleEMS.ir
  * @author mjeong
  */
 
-object Occupant {
+class Occupant {
   var name = "\n"
   
   def setName(newName: String): Unit = {
@@ -14,4 +14,8 @@ object Occupant {
   def getName(): String = {
     name
   }
+}
+
+object Occupant {
+  
 }
