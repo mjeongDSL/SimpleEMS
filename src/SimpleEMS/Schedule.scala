@@ -7,6 +7,8 @@ package SimpleEMS
 // Looking for a way to remove global val
 val DEFAULT_NAME = "\n"
 
+import simpleEMS.ir.Occupant._
+
 class Schedule {
   /**
    * The schedule for a day
@@ -27,4 +29,8 @@ class Schedule {
     }
     true
   }
+}
+
+object Schedule {
+  
 }

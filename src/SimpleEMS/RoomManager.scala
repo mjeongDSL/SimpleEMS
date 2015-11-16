@@ -3,7 +3,11 @@ package SimpleEMS
 /**
  * @author kevin
  */
-class RoomManager {
+
+import simpleEMS.ir.Schedule._
+import simpleEMS.ir.Room._
+
+object RoomManager {
   /*
    * Contains rooms and handles external API calls
    */
