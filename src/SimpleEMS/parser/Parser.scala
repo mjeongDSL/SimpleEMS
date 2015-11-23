@@ -27,10 +27,16 @@ object SimpleEMSParser extends JavaTokenParsers with PackratParsers {
 
     // parsing interface
     def apply(s: String): ParseResult[Stmt] = parseAll(stmt, s)
+    
+    lazy val qry: PackratParser[Qry] = 
+      (  stmt~filter ^^ {case s~f => }
+        | stmt~stmt  ^^ {case }
+        )
 
     /** statements **/
     lazy val stmt: PackratParser[Stmt] = 
-      (   rep1sep(stmt, ";") ^^ Block 
+      (  ^^ {case x~ => }
+        | rep1sep(stmt, ";") ^^ Block 
         | "var"~variable~":="~expr ^^ {case "var"~x~":="~e ⇒ x |←| e} 
         | variable~":="~expr ^^ {case x~":="~e ⇒ x |:=| e}           
         | "print"~>expr ^^ Print

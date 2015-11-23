@@ -1,19 +1,19 @@
-package simpleEMS.ir
+package simpleEMS.interpreter
 
 /**
  * @author mjeong
 */
-import simpleEMS.ir.Schedule._
+import simpleEMS.interpreter.Schedule._
 import simpleEMS.ir.WeekDay._
 
-class Room  {
+class Room(roomname: String, buildingname: String)  {
   val days = Array.fill[Schedule](7)(new Schedule())
-  var Building = "Shan"
+ 
   def isFree(hour: Int, endHour: Int, day: WeekDay.Value): Boolean = {
     days(day.id).isFree(hour, endHour)
   }
   
-  def getScheduleforDay(day: WeekDay.Value, dayEnd: WeekDay.Value): Schedule = {
+  def getScheduleforDay(day: WeekDay.Value): Schedule = {
     new Schedule() //placeholder
   }
   

@@ -1,4 +1,4 @@
-package simpleEMS.ir
+package simpleEMS.interpreter
 
 /**
  * @author mjeong

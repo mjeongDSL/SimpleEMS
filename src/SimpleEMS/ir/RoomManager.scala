@@ -1,11 +1,11 @@
-package simpleEMS.ir
+package simpleEMS.interpreter
 
 /**
  * @author mjeong
 */
 
-import simpleEMS.ir.Schedule._
-import simpleEMS.ir.Room._
+import simpleEMS.interpreter.Schedule._
+import simpleEMS.interpreter.Room._
 
 class RoomManager {
   /*
@@ -15,11 +15,11 @@ class RoomManager {
   val mRooms = scala.collection.mutable.HashMap.empty[String, Room]
   
   def makeNewRoom(roomName: String): Unit = {
-    mRooms += (roomName -> new Room())
+    mRooms += (roomName -> new Room("\n", "\n"))
   }
   
-  def getSchedule (roomName: String, day: WeekDay.Value, dayEnd: WeekDay.Value): Schedule = {
-    mRooms(roomName).getScheduleforDay(day, dayEnd)
+  def getSchedule (roomName: String, day: WeekDay.Value): Schedule = {
+    mRooms(roomName).getScheduleforDay(day)
   }
     
   def getAvailableRooms (hour: Int, endHour: Int, day: WeekDay.Value): Seq[Room] = { 
