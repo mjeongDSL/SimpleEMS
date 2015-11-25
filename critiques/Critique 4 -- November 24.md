@@ -22,3 +22,22 @@ doesn't really help that at all. Is the time for that thing attached
 to the room, it seems like a thing can only be a building, room, or 
 time when I was thinking it would be a combination of these. 
 Comments might also help here. 
+
+
+## Actual Parsing Advice
+
+Based on your AST, it seems like there isn't much variance in how users can
+define different attributes of the language, which should make it 
+easier to parse. I would stick to the Packrat Parser approach with 
+a tree basically designed by how your syntax tree is being defined
+in your prototype. 
+
+I'm not sure how much help sugar will be since your AST classes really aren't 
+that confusing and mostly just contain one value. You will still have to define
+them as some function, so I'm not sure it would save very much time. 
+
+I know the external lab is really simple but I think that might be the
+best place for you to start since it deals with decently simple AST and syntax
+which matches your syntax (probably, haven't seen it) more closely than our
+other example which is picobot external. If you give me the paper prototype, 
+I could add on to this. 
