@@ -10,13 +10,12 @@ The base of the language is still centered in the original problem for this lang
 If time allows in this project, we seek to add additional domain words to the language.
 
 ## Current State: 
-An API for basic event management. 
-Can handle about a week of events that must be delineated by hours.
+Accepts a program file and returns a mapping of descriptions to values.
 
-Currently, users can make rooms and then reserve those rooms for periods of time with hour-granularity. 
+(Sort-of, there was one bug I couldn't mash before the 11:59pm deadline where the DescriptorInterpreter could not be found in the control.scala class?)
+_As of now, the control file does not compile_
 
-## Implementation:
-The API is provided through the room manager class.
-The room manager should be initialized and then can be altered by making method calls.
-
-Other objects should not be accessed, and all desirable changes should be changeable using queries (or single Strings).
+## Running SimpleEMS:
+1. Download and install sbt
+2. run 'sbt run X' in the project's parent folder, where X is the location of the program
+The expected output is text describing the mapping from fields to values given in the program.
