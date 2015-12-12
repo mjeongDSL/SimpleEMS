@@ -3,51 +3,86 @@ package simpleEMS.semantics
 import simpleEMS.ir._
 
 /**
- * ExprInterpreter can evaluate an Expr
+ * DescriptorInterpreter can interpret descriptors
  */
-object ExprInterpreter {
-  /** evaluating an expression **/
-  def eval(expr: Expr): Value = evalE(expr, ρ0, σ0)
-
-  def evalE(expr: Expr, ρ: Environment, σ: Store): Value = expr match {
-    case Num(i)            ⇒ i
-    case x: Var            ⇒ σ(ρ(x))
-    case Plus(left, right) ⇒ evalE(left, ρ, σ) + evalE(right, ρ, σ)
-    case Sub(left, right)  ⇒ evalE(left, ρ, σ) - evalE(right, ρ, σ)
-    case Mult(left, right) ⇒ evalE(left, ρ, σ) * evalE(right, ρ, σ)
-    case Div(left, right)  ⇒ evalE(left, ρ, σ) / evalE(right, ρ, σ)
-  }
-}
-
-/**
- * StmtInterpreter can evaluate a Stmt
- */
-
-object StmtInterpreter {
-  import ExprInterpreter.evalE
-
-  /** evaluating a statement **/
-  def eval(stmt: Stmt): Result = evalS(stmt, ρ0, σ0)
-
-  def evalS(stmt: Stmt, ρ: Environment, σ: Store): Result = stmt match {
-    case Print(e)         ⇒ evalPrint(e, ρ, σ)
-    case Block(stmts)     ⇒ evalBlock(stmts, ρ, σ)
-    case If0(e, s_t, s_f) ⇒ evalIf0(e, s_t, s_f, ρ, σ)
-    case Set(x, e)        ⇒ evalAssign(x, e, ρ, σ)
-    case Update(x, e)     ⇒ evalUpdate(x, e, ρ, σ)    
-    case f: FuncDef       ⇒ evalFuncDef(f, ρ, σ)   
-    case Call(f, args)    ⇒ evalCall(f, args, ρ, σ)    
+class DescriptorInterpreter {
+  
+  /** evaluating a descriptor **/
+  def eval(ast: AST): Map[String, scala.collection.mutable.MutableList[Any]] = {
+    ast match {
+      case room(fields: DescriptionFields) => {
+        evalDFields(fields)
+      }
+      case reserve(fields: QueryFields) => {
+        evalQFields(fields)
+      }
+      case find(fields: QueryFields) => {
+        evalQFields(fields)
+      }
+    }
   }
 
-  /** print **/
-  def evalPrint(expr: Expr, ρ: Environment, σ: Store): Result = {
-    // (1) evaluate the expression
-    val v = evalE(expr, ρ, σ)
-
-    // (2) print the result
-    println(v)
-    
-    (ρ, σ) // printing doesn't affect the result
+  /** evaluating query fields **/
+  def evalQFields(ast: QueryFields): Map[String, scala.collection.mutable.MutableList[Any]] = {
+    ast match {
+      case MultipleQueryFields(field, rest) => {
+        evalQFields(rest).+(evalField(field))
+      }
+      case SingleQueryFields(field) => {
+        Map(evalField(field))
+      }
+    }
   }
   
+  /** evaluating description fields **/
+  def evalDFields(ast: DescriptionFields): Map[String, scala.collection.mutable.MutableList[Any]] = {
+    ast match {
+      case MultipleDescriptionFields(field, rest) => {
+        evalDFields(rest).+(evalField(field))
+      }
+      case SingleDescriptionFields(field) => {
+        Map(evalField(field))
+      }
+    }
+  }
+  
+  /** evaluating fields **/
+  def evalField(ast: Field): (String, scala.collection.mutable.MutableList[Any]) = {
+    ast match {
+      case SomeField(fieldName, data) => {
+        (fieldName, evalData(data))
+      }
+    }
+  }
+  
+  /** evaluating field data **/
+  def evalData(ast: Data): scala.collection.mutable.MutableList[Any] = {
+    ast match {
+      case MultipleDatum(datum, rest) => {
+        evalData(rest).+=:(evalDatum(datum))
+      }
+      case RangeDatum(startDatum, endDatum) => {
+        scala.collection.mutable.MutableList(evalDatum(startDatum), evalDatum(endDatum))
+      }
+      case SingleDatum(datum: Datum) => {
+        scala.collection.mutable.MutableList(evalDatum(datum))
+      }
+    }
+  }
+  
+  /** evaluating singletons **/
+  def evalDatum(ast: Datum) = {
+    ast match {
+      case StringDatum(value) => {
+        value
+      }
+      case IntDatum(value) => {
+        value
+      }
+      // For now, represent dates as a simple tuple
+      case DateDatum(m, d, y) => {
+        (m, d, y)
+      }
+    }
+  }
 }

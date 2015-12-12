@@ -1,4 +1,4 @@
-package simpleEMS.interpreter
+package queryProcessor
 
 /**
  * @author mjeong

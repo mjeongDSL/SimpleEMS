@@ -1,0 +1,7 @@
+reserve {
+    start : '8:00AM';
+    end : '9:00AM';
+    date : '12/8/2015';
+    occupants : '11';
+    type : 'classroom';
+}

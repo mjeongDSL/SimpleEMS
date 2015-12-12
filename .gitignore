@@ -1,1 +1,9 @@
 /bin/
+*.class
+*.xml
+*.cache
+*.properties
+*.xsl
+*.css
+project/*
+target/*

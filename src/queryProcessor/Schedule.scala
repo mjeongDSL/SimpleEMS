@@ -1,4 +1,4 @@
-package simpleEMS.interpreter
+package simpleEMS.queryProcessor
 
 /**
  * @author mjeong
@@ -6,7 +6,8 @@ package simpleEMS.interpreter
 
 // Looking for a way to remove global val
 
-import simpleEMS.interpreter.Occupant._
+import simpleEMS.queryProcessor.Occupant._
+
 
 class Schedule {
   /**

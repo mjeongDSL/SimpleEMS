@@ -1,11 +1,13 @@
-package simpleEMS.interpreter
+package simpleEMS.queryProcessor
 
 /**
  * @author mjeong
 */
 
-import simpleEMS.interpreter.Schedule._
-import simpleEMS.interpreter.Room._
+import simpleEMS.queryProcessor.Schedule._
+import simpleEMS.queryProcessor.Room._
+import simpleEMS.queryProcessor.Room
+import simpleEMS.queryProcessor.Schedule
 
 class RoomManager {
   /*

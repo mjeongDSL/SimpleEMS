@@ -1,10 +1,11 @@
-package simpleEMS.interpreter
+package simpleEMS.queryProcessor
 
 /**
  * @author mjeong
 */
-import simpleEMS.interpreter.Schedule._
+import simpleEMS.queryProcessor.Schedule._
 import simpleEMS.ir.WeekDay._
+import simpleEMS.queryProcessor.Schedule
 
 class Room(roomname: String, buildingname: String)  {
   val days = Array.fill[Schedule](7)(new Schedule())

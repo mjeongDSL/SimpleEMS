@@ -5,86 +5,48 @@ import scala.util.parsing.combinator.JavaTokenParsers
 import scala.util.parsing.combinator.PackratParsers
 import simpleEMS.ir._
 
-/**
- * The parser accepts the following language
-
-                n ∈ ℤ     f, x ∈ Name
-
-        s ∈ Stmt ::= `print` e | s `;` s
-                  |  `if0` `(` e `)` `then` `{` s `}` `else` `{` s `}`      
-                  |  `var` x `:=` e | x `:=` e
-                  |  `def` f `(` x `)` `:=` `{` s `}` | f `(` e `)`
-        
-        e ∈ Expr ::= n | x | e op e | `(` e `)`
-        
-        op ∈ Operator ::= `+` | `-` | `*` | `/`
-
- * The parser ignores whitespace. 
- * ℤ is parsed using JavaTokenParsers' wholeNumber parser.
- * Name is parsed using JavaTokenParsers' ident parser.
- */
 object SimpleEMSParser extends JavaTokenParsers with PackratParsers {
 
     // parsing interface
-    def apply(s: String): ParseResult[Stmt] = parseAll(stmt, s)
+    def apply(s: String): ParseResult[AST] = {
+      parseAll(descriptor, s)
+    }
     
-    lazy val qry: PackratParser[Qry] = 
-      (  stmt~filter ^^ {case s~f => }
-        | stmt~stmt  ^^ {case }
-        )
-
-    /** statements **/
-    lazy val stmt: PackratParser[Stmt] = 
-      (  ^^ {case x~ => }
-        | rep1sep(stmt, ";") ^^ Block 
-        | "var"~variable~":="~expr ^^ {case "var"~x~":="~e ⇒ x |←| e} 
-        | variable~":="~expr ^^ {case x~":="~e ⇒ x |:=| e}           
-        | "print"~>expr ^^ Print
-        | ifStmt
-        | funcDef
-        | call        
-        | failure("expected a statement"))
-        
-    // if stmts
-    def ifStmt: Parser[If0] =
-      "if0"~"("~expr~")"~"then"~"{"~stmt~"}"~"else"~"{"~stmt~"}" ^^
-         { case "if0"~"("~c~")"~"then"~"{"~t~"}"~"else"~"{"~f~"}" ⇒ If0(c,t,f) }
-
-    // function definitions
-    def funcDef: Parser[FuncDef] =
-     "def"~variable~"("~paramList~")"~":="~"{"~stmt~"}" ^^ 
-       { case "def"~f~"("~params~")"~":="~"{"~b~"}" ⇒ FuncDef(f, params, b) } 
-   
-    def paramList: Parser[List[Var]] = repsep(variable, ",")        
-        
-    // function calls
-    def call: Parser[Call] = 
-      variable~"("~argList~")" ^^  {case f~"("~args~")" ⇒ Call(f, args)}
+    lazy val descriptor: PackratParser[Descriptor] =
+      ( "room"~"{"~multiDFields~"}" ^^ {case "room"~"{"~f~"}" => new room(f)}
+      | "reserve"~"{"~multiQFields~"}" ^^ {case "reserve"~"{"~f~"}" => new reserve(f)}
+      | "find"~"{"~multiQFields~"}" ^^ {case "find"~"{"~f~"}" => new find(f)}
+      )
+      
+      // For now, they are parsed the same way but this way semantics can handle them different
+    lazy val multiDFields: PackratParser[DescriptionFields] =
+      ( singleField~";"~multiDFields ^^ {case f~";"~fs => new MultipleDescriptionFields(f, fs)}
+      | singleField~";" ^^ {case f~";" => new SingleDescriptionFields(f)}
+      )
     
-    def argList: Parser[List[Expr]] = repsep(expr, ",")          
+    lazy val multiQFields: PackratParser[QueryFields] =
+      ( singleField~";"~multiQFields ^^ {case f~";"~fs => new MultipleQueryFields(f, fs)}
+      | singleField~";" ^^ {case f~";" => new SingleQueryFields(f)}
+      )
     
-    /** expressions **/
-    lazy val expr: PackratParser[Expr] = 
-      (   expr~"+"~term ^^ {case l~"+"~r ⇒ l |+| r}
-        | expr~"-"~term ^^ {case l~"-"~r ⇒ l |-| r}
-        | term )
+    lazy val singleField: PackratParser[Field] =
+      ( string~":"~data ^^ {case s~":"~d => new SomeField(s, d)}
+      )
+      
+    lazy val data: PackratParser[Data] =
+      ( datum~","~data ^^ {case d~":"~dt => new MultipleDatum(d, dt)}
+      | datum~"-"~datum ^^ {case dL~":"~dR => new RangeDatum(dL, dR)}
+      | datum ^^ {case d => new SingleDatum(d)}
+      )
+      
+    lazy val datum: PackratParser[Datum] =
+      ( "'"~string~"'" ^^ {case "'"~s~"'" => new StringDatum(s)}
+      | int ^^ {case i => new IntDatum(i)}
+      | int~"/"~int~"/"~int ^^ {case d~"/"~m~"/"~y => new DateDatum(d, m, y)}
+     // | weekday ^^ {case w => new WeekdayDatum(w)}
+      )
 
-    // terms
-    lazy val term: PackratParser[Expr] = 
-      (  term~"*"~fact ^^ {case l~"*"~r ⇒ l |*| r}
-       | term~"/"~fact ^^ {case l~"/"~r ⇒ l |/| r}
-       | fact )
-        
-    // factors
-    lazy val fact: PackratParser[Expr] =
-      (   number
-        | variable
-        | "("~>expr<~")" 
-        | failure("expected an expression"))
-        
-    // variables
-    def variable: Parser[Var] = ident ^^ Var
-
-    // numbers
-    def number: Parser[Num] = wholeNumber ^^ {s ⇒ Num(s.toInt)}
- }
+    // Capture primitives
+    def string: Parser[String] = """(\w+-*)+""".r
+    def int: Parser[Int] = int ^^ {i => i.toInt}
+    }
